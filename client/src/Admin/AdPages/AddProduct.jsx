@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { ImSpinner } from "react-icons/im";
 
-import Banner from "../../assets/images/hero-img.jpg";
+import Banner from "../../assets/images/mane.png";
 import { collection, addDoc } from "firebase/firestore";
 import { db, storage } from "../../Firebase/FirebaseConfig";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import Swal from "sweetalert2";
 
+import { isAuthenticated } from "../../auth";
+import axios from "axios";
+
+import { NewCategoryForm } from "../AdComponents/adminPageComponents/MainCategory";
+import { NewSub_CategoryForm } from "../AdComponents/adminPageComponents/SubCategory";
+
 const AddProduct = () => {
   const [loading, setLoading] = useState(false);
-
   const [ProductImage, setProductImage] = useState("");
-
   const [ProductName, setProductName] = useState("");
   const [ProductDesc, setProductDesc] = useState("");
   const [ProductCategory, setProductCategory] = useState("");
@@ -19,60 +23,59 @@ const AddProduct = () => {
   const [Offer, setOffer] = useState("");
   const [Brand, setBrand] = useState("");
 
-
+ 
   
+  const { user, token } = isAuthenticated();
 
   const addProduct = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
+    const formData = new FormData();
+    formData.append("ProductName", ProductName);
+    formData.append("ProductDesc", ProductDesc);
+    formData.append("ProductCategory", ProductCategory);
+    formData.append("Price", Price);
+    formData.append("Offer", Offer);
+    formData.append("Brand", Brand);
+    formData.append("ProductImage", ProductImage);
+
     try {
-      const docRef = await collection(db, "Products");
-      const storageRef = ref(
-        storage,
-        `ProductImages/${Date.now() + ProductImage.name}`
-      );
-      const uploadTask = uploadBytesResumable(storageRef, ProductImage);
-
-      uploadTask.on(
-        () => {
-          setLoading(false);
-          Swal.fire({
-            icon: "error",
-            title: "Image Not Uploaded",
-          });
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            await addDoc(docRef, {
-              ImgUrl: downloadURL,
-            });
-
-            console.log("ImgUrl =", downloadURL);
-
-            setLoading(false);
-            Swal.fire({
-              icon: "success",
-              title: "Success!",
-              text: "Product  added successfully.",
-            });
-          });
+      const response = await fetch(
+        `http://localhost:8000/api/product/create/${userId}`,
+        {
+          method: "POST",
+          body: formData,
         }
       );
-    } catch (err) {
-      setLoading(false);
 
-      console.log(err);
+      if (response.status === 201) {
+        setLoading(false);
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Product added successfully.",
+        });
+      } else {
+        throw new Error("Failed to add product");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error adding product", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "An error occurred while adding the Product.",
+        text: "An error occurred while adding the product.",
       });
     }
   };
 
+  // add Category Function
+ 
 
+  // add Sub_Category Function
+
+ 
 
   return (
     <section className="flex first-line:items-center h-screen  p-10  gap-11">
@@ -88,8 +91,24 @@ const AddProduct = () => {
           </div>
 
           <div className="w-1/2">
+            {/* Add CARTEGORY */}
+            <NewCategoryForm/>
+
+          
+
+            {/* Add Sub_Category */}
+            <NewSub_CategoryForm/>
+          
+
             <h2 className="text-3xl font-bold mb-6">Add Product detail's </h2>
             <form onSubmit={addProduct}>
+
+              <div>
+             
+          
+
+
+              </div>
               <div className="mb-3">
                 <label
                   htmlFor="Product Name"
@@ -109,21 +128,19 @@ const AddProduct = () => {
 
               <div className="mb-3">
                 <label
-                  htmlFor="Description"
-                  className="block text-gray-700 text-xl font-bold mb-4"
+                  htmlFor="Product Name"
+                  className="block text-gray-700 text-xl font-bold mb-2"
                 >
-                  Description
+                  Product short description
                 </label>
                 <input
                   type="text"
                   className="w-full text-lg px-3 border font-bold rounded-lg focus:outline-none focus:ring focus:border-blue-300 h-10"
-                  placeholder="Enter Product Description"
-                  value={ProductDesc}
-                  onChange={(e) => setProductDesc(e.target.value)}
+                  placeholder="Enter Product short desciprtion"
                 />
               </div>
 
-              <div className="flex gap-11  items-center  mb-3">
+              <div className="flex gap-7  items-center  mb-3">
                 <div>
                   <label
                     htmlFor="Prise"
@@ -142,113 +159,43 @@ const AddProduct = () => {
 
                 <div>
                   <span className=" text-gray-700 text-xl font-bold ">
-                    Category
+                    Offers
                   </span>
 
-                  <select
-                    className="w-full mt-3 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 h-10 font-bold"
-                    value={ProductCategory}
-                    onChange={(e) => setProductCategory(e.target.value)}
-                  >
-                    <option className="text-2xl">Select Category</option>
+                  <select className="w-full mt-3 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 h-10 font-bold">
+                    <option className="text-2xl">Select Offers</option>
                     <option className="text-2xl" value="Meals">
-                      Meals
+                      10 %
                     </option>
                     <option className="text-2xl" value="Arabian Food">
-                      Arabian Food
+                      20 %
                     </option>
 
                     <option className="text-2xl" value="Burger">
-                      Burgers
+                      30 %
                     </option>
                     <option className="text-2xl" value="Juices">
-                      juices
+                      40 %
                     </option>
                     <option className="text-2xl" value="Sandwiches">
-                      Sandwiches
-                    </option>
-                    <option className="text-2xl" value="IceCreams">
-                      IceCreams
-                    </option>
-                    <option className="text-2xl" value="Pizzas">
-                      Pizzas
+                      50 %
                     </option>
                   </select>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between  mb-3">
-                <div>
-                  <span className=" text-gray-700 text-xl font-bold ">
-                    Brand
-                  </span>
-
-                  <select
-                    className="w-full mt-3 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 h-10 font-bold"
-                    value={Brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                  >
-                    <option className="text-lg">Select Category</option>
-                    <option className="text-2xl" value="Meals">
-                      Meals
-                    </option>
-                    <option className="text-2xl" value="Arabian Food">
-                      Arabian Food
-                    </option>
-
-                    <option className="text-2xl" value="Burger">
-                      Burgers
-                    </option>
-                    <option className="text-2xl" value="Juices">
-                      juices
-                    </option>
-                    <option className="text-2xl" value="Sandwiches">
-                      Sandwiches
-                    </option>
-                    <option className="text-2xl" value="IceCreams">
-                      IceCreams
-                    </option>
-                    <option className="text-2xl" value="Pizzas">
-                      Pizzas
-                    </option>
-                  </select>
-                </div>
-
-                <div className="ml-12">
-                  <span className=" text-gray-700 text-xl font-bold ">
-                    Offer
-                  </span>
-
-                  <select
-                    className="w-full mt-3 border rounded-lg focus:outline-none focus:ring focus:border-blue-300 h-10 font-bold"
-                    value={Offer}
-                    onChange={(e) => setOffer(e.target.value)}
-                  >
-                    <option className="text-2xl">Select Category</option>
-                    <option className="text-2xl" value="Meals">
-                      Meals
-                    </option>
-                    <option className="text-2xl" value="Arabian Food">
-                      Arabian Food
-                    </option>
-
-                    <option className="text-2xl" value="Burger">
-                      Burgers
-                    </option>
-                    <option className="text-2xl" value="Juices">
-                      juices
-                    </option>
-                    <option className="text-2xl" value="Sandwiches">
-                      Sandwiches
-                    </option>
-                    <option className="text-2xl" value="IceCreams">
-                      IceCreams
-                    </option>
-                    <option className="text-2xl" value="Pizzas">
-                      Pizzas
-                    </option>
-                  </select>
-                </div>
+              <div className="mb-6">
+                <label
+                  htmlFor="manufacture-details"
+                  className="block text-gray-700 text-xl font-semibold mb-2"
+                >
+                  Manufacture Details
+                </label>
+                <textarea
+                  id="manufacture-details"
+                  className="w-full p-3 text-lg text-gray-700 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out h-32 resize-none"
+                  placeholder="Enter manufacture details"
+                ></textarea>
               </div>
 
               <div className="">

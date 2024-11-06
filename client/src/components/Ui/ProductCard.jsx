@@ -4,9 +4,26 @@ import star from "../../assets/icons/review.png";
 
 import test from "../../assets/8ce53529-21ab-44ea-8422-0259ceb700b4-1FriSyPl33ilsVe8kp_jcc-tyDm31DcFU.jpeg";
 
+import { useDispatch } from "react-redux";
 
+import { cartActions } from "../../Redux/Slices/CartSlice";
 
 const ProductCard = () => {
+  const dispatch = useDispatch();
+
+  const addToCart = () => {
+    dispatch(
+      cartActions.addItem({
+        id: item.id,
+        productName: item.productName,
+        price: item.price,
+        imgUrl: item.imgUrl,
+      })
+    );
+
+    toast.success("Product added Successfully");
+  };
+
   return (
     <div>
       <div class="relative m-10 flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md">
@@ -42,8 +59,8 @@ const ProductCard = () => {
               </span>
             </div>
           </div>
-          <a
-            href="#"
+          <button
+            onClick={addToCart}
             class="flex items-center justify-center rounded-md bg-slate-900 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
           >
             <svg
@@ -61,7 +78,7 @@ const ProductCard = () => {
               />
             </svg>
             Add to cart
-          </a>
+          </button>
         </div>
       </div>
     </div>

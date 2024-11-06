@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BsListUl,
   BsPersonBoundingBox,
@@ -12,10 +12,10 @@ import { Link } from "react-router-dom";
 import { SiGnuprivacyguard } from "react-icons/si";
 import { FaHireAHelper } from "react-icons/fa";
 import { LiaBusinessTimeSolid } from "react-icons/lia";
-import Dialog from "../../components/Ui/DiologBox/LoginDilog";
 
 const Header = () => {
   const [openDrop, setOpenDrop] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleOpen = () => {
     setOpenDrop(!openDrop);
@@ -25,8 +25,27 @@ const Header = () => {
     setOpenDrop(false);
   };
 
+  const handleScroll = () => {
+    if (window.scrollY > 0) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <header>
+    <header
+      className={`w-full fixed top-0 left-0 z-10 ${
+        isScrolled ? "shadow-lg" : ""
+      }`}
+    >
       <nav className="bg-white px-4 lg:px-6 py-3.5 ">
         <div className="flex flex-wrap  mx-auto max-w-screen-xl justify-between items-center">
           <Link to="home" className="flex">
@@ -52,17 +71,17 @@ const Header = () => {
                 </Link>
               </li>
               <li>
-                <Link to="#" className="text-gray-70 hover:text-orange-400">
+                <Link to="cart" className="text-gray-70 hover:text-orange-400">
                   Cart
                 </Link>
               </li>
             </ul>
           </div>
 
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-3 items-center hidden sm:flex">
             <Link to="watchList">
               <span className="cursor-pointer">
-                <FiHeart size={22} />
+                <FiHeart className="text-red-500" size={22} />
               </span>
             </Link>
 
@@ -117,9 +136,11 @@ const Header = () => {
                     </Link>
                     <hr />
 
-                    <li className="flex items-center justify-between">
-                      Admin <LiaBusinessTimeSolid className="ml-1" />
-                    </li>
+                    <Link to="admin">
+                      <li className="flex items-center justify-between">
+                        Admin <LiaBusinessTimeSolid className="ml-1" />
+                      </li>
+                    </Link>
 
                     <Link to="help">
                       <li className="flex items-center justify-between">

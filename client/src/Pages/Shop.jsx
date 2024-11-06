@@ -3,16 +3,16 @@ import CommonSection from "../components/Ui/CommonSection";
 import ProductCard from "../components/Ui/ProductCard";
 
 const Shop = () => {
-
-  
   return (
     <section className="">
-      <CommonSection />
+      <div className="mt-28">
+        <CommonSection />
+      </div>
       <div
-        className="px-[30px] py-6 max-w-[1170px] 
+        className="px-[30px] py-4 max-w-[1170px] 
       mx-auto flex flex-col lg:flex-row justify-between
       gap-4 lg:gap-x-3 relative lg:top-4 lg:shadow-1 bg-white 
-      lg:bg-transparent lg:backdrop-blur rounded-lg"
+      lg:bg-transparent lg:backdrop-blur rounded-lg -mt-36 mb-24"
       >
         <div>
           <input

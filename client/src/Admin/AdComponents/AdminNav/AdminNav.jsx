@@ -20,12 +20,12 @@ const AdminNav = () => {
           >
             <ul class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
               <li>
-                <Link to="admin" class="text-gray-70 hover:text-orange-400">
+                <Link to="/admin" class="text-gray-70 hover:text-orange-400">
                   Dashboard
                 </Link>
               </li>
               <li>
-                <Link to="#" class="text-gray-70 hover:text-orange-400">
+                <Link to="/admin/addProduct" class="text-gray-70 hover:text-orange-400">
                   Add Product
                 </Link>
               </li>
